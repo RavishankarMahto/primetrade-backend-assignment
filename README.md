@@ -1,54 +1,227 @@
-# Backend + Frontend Assignment — REST API (Auth, RBAC, Tasks)
+<div align="center">
 
-Monorepo:
+```
+██████╗ ██████╗ ██╗███╗   ███╗███████╗████████╗██████╗  █████╗ ██████╗ ███████╗
+██╔══██╗██╔══██╗██║████╗ ████║██╔════╝╚══██╔══╝██╔══██╗██╔══██╗██╔══██╗██╔════╝
+██████╔╝██████╔╝██║██╔████╔██║█████╗     ██║   ██████╔╝███████║██║  ██║█████╗  
+██╔═══╝ ██╔══██╗██║██║╚██╔╝██║██╔══╝     ██║   ██╔══██╗██╔══██║██║  ██║██╔══╝  
+██║     ██║  ██║██║██║ ╚═╝ ██║███████╗   ██║   ██║  ██║██║  ██║██████╔╝███████╗
+╚═╝     ╚═╝  ╚═╝╚═╝╚═╝     ╚═╝╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ ╚══════╝
+```
 
-- **`backend/`** — Node.js + Express + TypeScript + Prisma + PostgreSQL, JWT auth, role-based access (`USER` | `ADMIN`), CRUD for **tasks**, API versioning (`/api/v1`), validation (Zod), Swagger UI, rate limiting, Helmet.
-- **`frontend/`** — React (Vite + TypeScript): register, login, JWT in `localStorage`, protected dashboard, task CRUD, admin “list users” when role is `ADMIN`.
-- **`postman/`** — Postman collection for quick API testing.
+### Scalable REST API · JWT Authentication · Role-Based Access Control · Task Management
 
-## Prerequisites
+<br/>
 
-- Node.js 20+
-- PostgreSQL 14+ (local or Docker)
+[![Node.js](https://img.shields.io/badge/Node.js-20+-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-18+-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14+-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?style=for-the-badge&logo=prisma&logoColor=white)](https://www.prisma.io/)
+[![Swagger](https://img.shields.io/badge/Swagger-UI-85EA2D?style=for-the-badge&logo=swagger&logoColor=black)](https://swagger.io/)
+[![JWT](https://img.shields.io/badge/JWT-Auth-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white)](https://jwt.io/)
+[![License](https://img.shields.io/badge/License-Sample%20Assignment-orange?style=for-the-badge)](./LICENSE)
 
-## Quick start
+</div>
 
-### 1. Database
+---
 
-Create a database (example name: `primetrade_assignment`).
+## 📌 Table of Contents
 
-Optional Docker:
+- [Overview](#-overview)
+- [Architecture](#-architecture)
+- [Tech Stack](#-tech-stack)
+- [Core Features](#-core-features)
+- [Prerequisites](#-prerequisites)
+- [Quick Start](#-quick-start)
+  - [Database Setup](#1-database-setup)
+  - [Backend](#2-backend)
+  - [Frontend](#3-frontend)
+- [API Reference](#-api-reference-v1)
+- [Project Structure](#-project-structure)
+- [Security](#-security)
+- [Scalability](#-scalability--operations)
+- [Postman Collection](#-postman-collection)
+- [Assignment Checklist](#-assignment-checklist)
+
+---
+
+## 🚀 Overview
+
+A **production-grade monorepo** built for the PrimeTrade.ai Backend Developer Intern assignment. It demonstrates a secure, scalable REST API with JWT-based authentication, role-based access control (`USER` | `ADMIN`), and full CRUD for a **Tasks** entity — paired with a React frontend that consumes every endpoint.
+
+```
+monorepo/
+├── backend/     → Node.js + Express + TypeScript + Prisma + PostgreSQL
+├── frontend/    → React + Vite + TypeScript
+└── postman/     → Postman collection for API testing
+```
+
+---
+
+## 🏗️ Architecture
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│                        CLIENT (Browser)                       │
+│          React 18 · Vite · TypeScript · JWT in localStorage   │
+└────────────────────────┬─────────────────────────────────────┘
+                         │  HTTP / REST
+                         ▼
+┌──────────────────────────────────────────────────────────────┐
+│                    BACKEND  (Port 4000)                        │
+│  Express · TypeScript · /api/v1 versioning                    │
+│  ┌───────────┐  ┌────────────┐  ┌──────────────────────────┐ │
+│  │  Auth     │  │  Tasks     │  │  Admin                   │ │
+│  │ /register │  │ GET  POST  │  │  GET /admin/users        │ │
+│  │ /login    │  │ PATCH DEL  │  │  (ADMIN role only)       │ │
+│  │ /me       │  └────────────┘  └──────────────────────────┘ │
+│  └───────────┘                                                │
+│  Middleware: Helmet · Rate Limit · Zod Validation · JWT       │
+└────────────────────────┬─────────────────────────────────────┘
+                         │  Prisma ORM
+                         ▼
+┌──────────────────────────────────────────────────────────────┐
+│                    PostgreSQL 14+                              │
+│          Users ←── Tasks   (role: USER | ADMIN)               │
+└──────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology | Purpose |
+|-------|-----------|---------|
+| **Runtime** | Node.js 20+ | Server runtime |
+| **Language** | TypeScript 5.x | Type safety across the stack |
+| **Framework** | Express.js | REST API server |
+| **ORM** | Prisma | Database access & migrations |
+| **Database** | PostgreSQL 14+ | Primary data store |
+| **Auth** | JWT + bcrypt | Secure authentication (cost factor 12) |
+| **Validation** | Zod | Schema validation & sanitization |
+| **Docs** | Swagger UI | Interactive API documentation |
+| **Security** | Helmet + Rate Limiter | HTTP hardening |
+| **Frontend** | React 18 + Vite | UI layer |
+| **Styling** | TailwindCSS / CSS Modules | Component styling |
+| **API Testing** | Postman Collection | Endpoint testing & token management |
+
+---
+
+## ✅ Core Features
+
+### 🔐 Authentication & Authorization
+- **User Registration** — email + password with bcrypt hashing (cost factor 12)
+- **JWT Login** — returns signed token, configurable expiry
+- **Role-Based Access Control** — `USER` and `ADMIN` roles with middleware guards
+- **Protected Routes** — JWT required on all `/tasks` and `/admin` endpoints
+- **Admin Privileges** — admins can view all tasks and list all users; users see only their own
+
+### 📋 Task Management (CRUD)
+- Create, read, update, delete tasks
+- Users access only their own tasks; admins access all
+- Tasks linked to owning user via foreign key
+- Full validation on every request (title, status, etc.)
+
+### 🌐 API Design
+- **Versioned** at `/api/v1` for backward-compatible future evolution
+- **Consistent response envelope**: `{ success: true, data: ... }` or `{ success: false, error: { code, message } }`
+- Appropriate HTTP status codes on all responses
+- **Swagger UI** at `/docs` with full schema documentation
+- **OpenAPI JSON** at `/openapi.json` for tooling/import
+
+### 🖥️ Frontend
+- Register & login forms with error/success feedback
+- JWT stored in `localStorage`, attached to every API request
+- Protected dashboard — redirects unauthenticated users to login
+- Full task CRUD UI (create, view, edit, delete)
+- **Admin panel**: "List Users" visible only when role is `ADMIN`
+- Error/success messages surfaced from API responses
+
+### 🔒 Security & Scalability
+- Helmet for HTTP header hardening
+- Rate limiting on `/api/*` to prevent brute-force
+- Input sanitization & trimming via Zod
+- JSON body size capped
+- Scalable project structure — new modules drop into `src/routes/v1` + `src/services`
+
+---
+
+## 📦 Prerequisites
+
+| Requirement | Version |
+|------------|---------|
+| [Node.js](https://nodejs.org/) | 20+ |
+| [PostgreSQL](https://www.postgresql.org/) | 14+ (local or Docker) |
+| npm / yarn | Latest |
+
+---
+
+## ⚡ Quick Start
+
+### 1. Database Setup
+
+**Option A — Local PostgreSQL:**
+
+Create a database named `primetrade_assignment` in your local PostgreSQL instance.
+
+**Option B — Docker (recommended for quick start):**
 
 ```bash
-docker run --name pg-assign -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -e POSTGRES_DB=primetrade_assignment -p 5432:5432 -d postgres:16
+docker run --name pg-assign \
+  -e POSTGRES_PASSWORD=postgres \
+  -e POSTGRES_USER=postgres \
+  -e POSTGRES_DB=primetrade_assignment \
+  -p 5432:5432 \
+  -d postgres:16
 ```
+
+---
 
 ### 2. Backend
 
 ```bash
 cd backend
 cp .env.example .env
-# Edit .env: set DATABASE_URL and JWT_SECRET (min 32 characters)
-
-npm install
-npx prisma generate
-npx prisma db push
-npm run dev
 ```
 
-- API: `http://localhost:4000`
-- Health: `GET /health`
-- **Swagger UI:** `http://localhost:4000/docs`
-- OpenAPI JSON: `http://localhost:4000/openapi.json`
+Open `.env` and configure:
+
+```env
+# Required
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/primetrade_assignment"
+JWT_SECRET="your-super-secret-key-minimum-32-characters"
+
+# Optional
+JWT_EXPIRES_IN="7d"
+PORT=4000
+SEED_ADMIN_EMAIL="admin@example.com"
+SEED_ADMIN_PASSWORD="Admin12345"
+```
+
+```bash
+npm install
+npx prisma generate       # generate Prisma client
+npx prisma db push        # sync schema to database
+npm run dev               # start dev server with hot-reload
+```
+
+**Endpoints after startup:**
+
+| URL | Description |
+|-----|-------------|
+| `http://localhost:4000/health` | Health check |
+| `http://localhost:4000/docs` | **Swagger UI** |
+| `http://localhost:4000/openapi.json` | OpenAPI spec |
 
 **Seed an admin user (optional):**
 
 ```bash
-# Defaults: admin@example.com / Admin12345 — override with env vars if needed
 npx prisma db seed
+# Creates: admin@example.com / Admin12345 (override via SEED_ADMIN_EMAIL / SEED_ADMIN_PASSWORD)
 ```
 
-Set `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD` in the environment when running seed if you want custom credentials.
+---
 
 ### 3. Frontend
 
@@ -58,51 +231,189 @@ npm install
 npm run dev
 ```
 
-Open `http://localhost:5173`. The Vite dev server proxies `/api` and `/health` to `http://localhost:4000`.
+Open **`http://localhost:5173`**
 
-**Production / separate hosts:** build the frontend and set `VITE_API_BASE` to your API origin (e.g. `https://api.example.com`).
+> The Vite dev server proxies `/api` and `/health` to `http://localhost:4000` automatically — no CORS config needed during development.
 
-## API overview (v1)
+**Production / separate hosts:**
 
-| Method | Path | Auth | Description |
-|--------|------|------|-------------|
-| POST | `/api/v1/auth/register` | — | Register (password hashed with bcrypt) |
-| POST | `/api/v1/auth/login` | — | Login, returns JWT |
-| GET | `/api/v1/auth/me` | JWT | Current user |
-| GET/POST | `/api/v1/tasks` | JWT | List (user: own tasks; admin: all) / Create |
-| GET/PATCH/DELETE | `/api/v1/tasks/:id` | JWT | Read / update / delete (admin can access any) |
-| GET | `/api/v1/admin/users` | JWT + `ADMIN` | List users |
+```bash
+# Set your API base URL, then build
+VITE_API_BASE=https://api.yourdomain.com npm run build
+```
 
-Responses use `{ success: true, data: ... }` or `{ success: false, error: { code, message, ... } }` with appropriate HTTP status codes.
+---
 
-## Postman
+## 📖 API Reference (v1)
 
-Import `postman/Primetrade-Assignment.postman_collection.json`. Run **Login** to auto-save `token` for protected routes.
+Base URL: `http://localhost:4000/api/v1`
 
-## Scalability & operations
+### Auth
 
-See [SCALABILITY.md](./SCALABILITY.md) for notes on horizontal scaling, caching, queues, and deployment.
+| Method | Endpoint | Auth Required | Description |
+|--------|----------|:---:|-------------|
+| `POST` | `/auth/register` | ❌ | Register new user (bcrypt hashed password) |
+| `POST` | `/auth/login` | ❌ | Login, returns signed JWT |
+| `GET` | `/auth/me` | ✅ JWT | Get current authenticated user |
 
-## Project structure (backend)
+### Tasks
 
-- `src/config` — environment validation
-- `src/middleware` — auth, RBAC, errors, validation
-- `src/routes/v1` — versioned routes
-- `src/services` — business logic
-- `src/validators` — Zod schemas
-- `prisma/schema.prisma` — database schema
+| Method | Endpoint | Auth Required | Description |
+|--------|----------|:---:|-------------|
+| `GET` | `/tasks` | ✅ JWT | List tasks (USER: own only · ADMIN: all) |
+| `POST` | `/tasks` | ✅ JWT | Create a new task |
+| `GET` | `/tasks/:id` | ✅ JWT | Get single task (ADMIN can access any) |
+| `PATCH` | `/tasks/:id` | ✅ JWT | Update task (ADMIN can update any) |
+| `DELETE` | `/tasks/:id` | ✅ JWT | Delete task (ADMIN can delete any) |
 
-## Security notes
+### Admin
 
-- Passwords: bcrypt (cost factor 12)
-- JWT: signed with `JWT_SECRET`, configurable expiry
-- Input validation and trimming via Zod; JSON body size limited
-- Helmet + rate limiting on `/api/*`
+| Method | Endpoint | Auth Required | Description |
+|--------|----------|:---:|-------------|
+| `GET` | `/admin/users` | ✅ JWT + `ADMIN` | List all registered users |
 
-## Note on the assignment email
+### Response Format
 
-The instructions mention both “Backend Developer” and “Frontend Developer” in places; mirror the role you are applying for in your email subject line, and attach any **log files** they requested when you submit.
+**Success:**
+```json
+{
+  "success": true,
+  "data": { ... }
+}
+```
 
-## License
+**Error:**
+```json
+{
+  "success": false,
+  "error": {
+    "code": "UNAUTHORIZED",
+    "message": "Invalid or expired token"
+  }
+}
+```
 
-Provided as a sample assignment project; adjust as needed for your submission.
+---
+
+## 🗂️ Project Structure
+
+```
+backend/
+├── prisma/
+│   ├── schema.prisma          # Database schema (User, Task, Role enum)
+│   └── seed.ts                # Admin user seeder
+└── src/
+    ├── config/                # Environment validation (Zod)
+    ├── middleware/
+    │   ├── auth.ts            # JWT verification middleware
+    │   ├── rbac.ts            # Role-based access guard
+    │   ├── errorHandler.ts    # Global error handler
+    │   └── validate.ts        # Zod request validation
+    ├── routes/
+    │   └── v1/
+    │       ├── auth.routes.ts
+    │       ├── tasks.routes.ts
+    │       └── admin.routes.ts
+    ├── services/
+    │   ├── auth.service.ts    # Registration, login, token logic
+    │   ├── tasks.service.ts   # Task CRUD business logic
+    │   └── admin.service.ts   # Admin operations
+    ├── validators/
+    │   ├── auth.validator.ts  # Zod schemas for auth
+    │   └── tasks.validator.ts # Zod schemas for tasks
+    └── app.ts                 # Express app setup (Helmet, rate limit, Swagger)
+
+frontend/
+├── src/
+│   ├── api/                   # Axios client + endpoint functions
+│   ├── components/            # Reusable UI components
+│   ├── pages/
+│   │   ├── Register.tsx
+│   │   ├── Login.tsx
+│   │   ├── Dashboard.tsx      # Protected — task CRUD
+│   │   └── AdminPanel.tsx     # ADMIN only — user list
+│   ├── context/               # Auth context (JWT, user role)
+│   └── App.tsx
+
+postman/
+└── Primetrade-Assignment.postman_collection.json
+```
+
+---
+
+## 🔒 Security
+
+| Concern | Implementation |
+|---------|---------------|
+| **Password Storage** | bcrypt with cost factor **12** |
+| **Token Signing** | JWT signed with `JWT_SECRET` (min 32 chars), configurable expiry |
+| **Input Validation** | Zod schemas on every endpoint; strings trimmed, types enforced |
+| **HTTP Hardening** | Helmet sets secure headers (CSP, HSTS, X-Frame-Options, etc.) |
+| **Rate Limiting** | Express rate-limit on `/api/*` — prevents brute-force attacks |
+| **Body Size** | JSON body size capped to prevent payload attacks |
+| **RBAC** | Middleware-level role checks — users cannot escalate privileges |
+
+---
+
+## 📈 Scalability & Operations
+
+See [`SCALABILITY.md`](./SCALABILITY.md) for a detailed write-up. Summary:
+
+- **Horizontal Scaling** — Stateless JWT means any backend instance can verify tokens; run multiple instances behind a load balancer (nginx / AWS ALB)
+- **Caching** — Redis layer for frequently-read data (e.g., user profile, task lists) — reduces DB load
+- **Database** — Read replicas for query offloading; connection pooling via PgBouncer
+- **Queue / Background Jobs** — BullMQ + Redis for async operations (emails, notifications)
+- **Containerization** — Dockerfile + docker-compose ready for Docker / Kubernetes deployment
+- **Microservices Path** — `auth`, `tasks`, and `admin` services are already module-separated and can be extracted into independent services
+
+---
+
+## 📬 Postman Collection
+
+1. Open Postman → **Import**
+2. Select `postman/Primetrade-Assignment.postman_collection.json`
+3. Run the **Login** request — the collection automatically saves the returned JWT as the `token` environment variable
+4. All protected requests use `Bearer {{token}}` automatically
+
+---
+
+## ✅ Assignment Checklist
+
+| Requirement | Status |
+|-------------|:------:|
+| User registration & login with bcrypt + JWT | ✅ |
+| Role-based access (`USER` \| `ADMIN`) | ✅ |
+| CRUD APIs for Tasks entity | ✅ |
+| API versioning (`/api/v1`) | ✅ |
+| Error handling & Zod validation | ✅ |
+| Swagger UI + OpenAPI JSON | ✅ |
+| PostgreSQL schema via Prisma | ✅ |
+| React frontend (register, login, dashboard) | ✅ |
+| Protected dashboard (JWT required) | ✅ |
+| Task CRUD on frontend | ✅ |
+| Admin user list (ADMIN role only) | ✅ |
+| Error/success messages from API | ✅ |
+| Helmet + rate limiting | ✅ |
+| Input sanitization & trimming | ✅ |
+| Postman collection | ✅ |
+| Scalability notes | ✅ |
+| GitHub README | ✅ |
+
+---
+
+## 📧 Submission
+
+- joydip@primetrade.ai
+- hello@primetrade.ai
+- chetan@primetrade.ai
+- sonika@primetrade.ai
+
+---
+
+<div align="center">
+
+Built with ❤️ for the **PrimeTrade.ai** Backend Developer Intern Assignment
+
+*First come, first served — get it done!*
+
+</div>
